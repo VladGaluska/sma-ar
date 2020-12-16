@@ -1,16 +1,12 @@
 package ro.ac.upt.christmasarsample
 
-import android.app.Activity
-import android.app.ActivityManager
-import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.support.v7.app.AppCompatActivity
+import android.view.MotionEvent
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
+import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
@@ -32,28 +28,33 @@ class AugmentedActivity : AppCompatActivity() {
 
         arFragment = supportFragmentManager.findFragmentById(R.id.scf_central) as ArFragment
 
-        TODO("2. Invoke addRenderableToScene once a tap is executed over the AR plane")
-
-
+        arFragment.setOnTapArPlaneListener(fun(result: HitResult, plane: Plane, motionEvent: MotionEvent) {
+            val anchor = result.createAnchor()
+            renderable?.let{
+                addRenderableToScene(anchor, it)
+            }
+        })
     }
 
     private fun initRenderableModel() {
         val modelUri = Uri.parse("model.sfb")
 
-        TODO("1. Init model renderable variable")
-
+        renderable = ModelRenderable.builder()
+                                    .setSource(this, modelUri)
+                                    .build()
+                                    .get()
 
     }
 
     private fun addRenderableToScene(anchor: Anchor, renderable: Renderable) {
-        TODO("3. Build an anchor node and set the AR scene to be its parent")
 
+        val anchorNode = AnchorNode(anchor)
+        anchorNode.setParent(arFragment.arSceneView.scene)
 
-        TODO("4. Build an transformable node and set the previously anchor node to be its parent")
+        val transformableNode = TransformableNode(arFragment.transformationSystem)
+        transformableNode.setParent(anchorNode)
 
-
-        TODO("5. Assign node's renderable property to previously loaded renderable")
-
+        transformableNode.renderable = renderable
 
     }
 
